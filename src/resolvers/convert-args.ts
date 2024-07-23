@@ -44,16 +44,15 @@ function generateInstanceTransformationTree(target: TypeValue): TransformationTr
     let inputFields = metadata.fields!;
     let superClass = Object.getPrototypeOf(metadata.target);
     while (superClass.prototype !== undefined) {
-      const superInputType = getInputType(superClass);
-      if (superInputType) {
-        // support overwriting fields of extended types
-        const existingFieldNames = new Set(inputFields.map(field => field.name));
-        const superFields = superInputType.fields!.filter(
-          field => !existingFieldNames.has(field.name),
-        );
-        inputFields = [...inputFields, ...superFields];
-      }
-      superClass = Object.getPrototypeOf(superClass);
+        const superInputType = getInputType(superClass);
+        if (superInputType) {
+            const existingFieldNames = new Set(inputFields.map(field => field.name));
+            const superFields = superInputType!.fields!.filter(field => !existingFieldNames.has(field.name));
+            inputFields = [...inputFields, ...superFields];
+            superClass = Object.getPrototypeOf(superClass);
+        } else {
+          break;
+        }
     }
 
     const transformationTree: TransformationTree = {
